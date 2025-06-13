@@ -26,12 +26,13 @@
         >
           <div *ngIf="card.editing; else displayCard">
             <input
-            #cardInput
-            [id]="'card-input-' + card.id"  type="text"
-            [(ngModel)]="card.title"
-            (keydown)="handleKeyDown($event, card, cardInput)"
-            (blur)="saveCardEdit(card, cardInput.value)"
-            autofocus
+              #cardInput
+              [id]="card.id ? 'card-input-' + card.id : 'card-input-new-' + column.id + '-' + card.position"
+              type="text"
+              [(ngModel)]="card.title"
+              (keydown)="handleKeyDown($event, card, cardInput)"
+              (blur)="saveCardEdit(card, cardInput.value)"
+              autofocus
             />
             <menu>
                 <button class="icon-button" (click)="saveCardEdit(card, cardInput.value)" title="Salvar Edição">

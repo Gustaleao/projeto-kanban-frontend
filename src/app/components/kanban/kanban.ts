@@ -11,10 +11,22 @@ interface Card {
   position?: number;
   columnId: number;
   editing?: boolean;
-  originalTitle?: string; 
+  originalTitle?: string;
 }
-interface Column { id: number; title: string; position: number; boardId: number; cards: Card[]; }
-interface Board { id: number; title: string; columns: Column[]; }
+
+interface Column {
+  id: number;
+  title: string;
+  position: number;
+  boardId: number;
+  cards: Card[];
+}
+
+interface Board {
+  id: number;
+  title: string;
+  columns: Column[];
+}
 
 @Component({
   standalone: true,
@@ -42,132 +54,136 @@ export class Kanban implements OnInit {
         this.board = data;
         this.columns = data.columns.sort((a, b) => a.position - b.position);
         this.columns.forEach(column => {
-          column.cards = column.cards.sort((a, b) => a.position! - b.position!);
+          column.cards = column.cards.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
         });
       },
       error: (error) => {
         console.error('Erro ao carregar o board:', error);
-        alert('Erro ao carregar o board. Verifique o console.');
+        alert('Erro ao carregar o quadro Kanban. Verifique o console.');
       }
     });
   }
 
   addCard(column: Column) {
     const newCard: Card = {
-      title: 'Nova Tarefa',
+      title: '',
       columnId: column.id,
       position: column.cards.length > 0 ? Math.max(...column.cards.map(c => c.position!)) + 1 : 0,
-      editing: true
+      editing: true,
+      originalTitle: ''
     };
 
     column.cards.push(newCard);
 
-    this.http.post<Card>(`${BASE_API_URL}/cards`, newCard).subscribe({
-      next: (createdCard) => {
-        const index = column.cards.indexOf(newCard);
-        if (index > -1) {
-          column.cards[index].id = createdCard.id;
-        }
-        setTimeout(() => {
-          this.focusCardInput(createdCard.id!);
-        });
-      },
-      error: (error) => {
-        console.error('Erro ao adicionar card:', error);
-        alert('Erro ao adicionar card. Verifique o console.');
-        column.cards = column.cards.filter(c => c !== newCard); 
-      }
-    });
+    setTimeout(() => {
+      this.focusCardInput(newCard);
+    }, 0);
   }
 
   editCard(card: Card) {
     card.editing = true;
-    card.originalTitle = card.title; 
-    setTimeout(() => {
-      this.focusCardInput(card.id!);
-    });
-  }
+    card.originalTitle = card.title;
 
-  focusCardInput(cardId: number) {
-    const inputElement = this.cardInputs.find(
-      (input) => input.nativeElement.id === 'card-input-' + cardId
-    );
-    if (inputElement) {
-      inputElement.nativeElement.focus();
-      inputElement.nativeElement.select();
-    } else {
-      console.warn('Não foi possível encontrar o input do card para focar:', cardId);
-    }
+    setTimeout(() => {
+      this.focusCardInput(card);
+    }, 0);
   }
 
   saveCardEdit(card: Card, newTitle: string) {
     const trimmedTitle = newTitle.trim();
 
-    if (!trimmedTitle && card.id === undefined) {
-      this.columns.forEach(col => col.cards = col.cards.filter(c => c !== card));
+    if (card.id === undefined && trimmedTitle === '') {
+      this.columns.forEach(col => {
+        col.cards = col.cards.filter(c => c !== card);
+      });
       card.editing = false;
       return;
     }
 
-    if (!trimmedTitle && card.id !== undefined) {
-      alert('O título do card não pode ser vazio. Card revertido.');
-      card.title = card.originalTitle || 'Erro de Título'; 
-      this.loadBoard(); 
+    if (card.id !== undefined && trimmedTitle === '') {
+      alert('O título do card não pode ser vazio. Revertendo para o título original.');
+      card.title = card.originalTitle!;
       card.editing = false;
-      delete card.originalTitle;
+      this.loadBoard();
       return;
     }
 
     if (card.id !== undefined && trimmedTitle === card.originalTitle) {
-        card.editing = false;
-        delete card.originalTitle;
-        return;
+      card.editing = false;
+      return;
     }
 
     card.title = trimmedTitle;
-    card.editing = false;
-    delete card.originalTitle;
 
-    if (card.id !== undefined) {
-      this.http.put<Card>(`${BASE_API_URL}/cards/${card.id}`, { title: card.title }).subscribe({
-        next: (updatedCard) => {
+    if (card.id === undefined) {
+      this.http.post<Card>(`${BASE_API_URL}/cards`, {
+        title: card.title,
+        columnId: card.columnId,
+        position: card.position
+      }).subscribe({
+        next: (createdCard) => {
+          console.log('Card criado com sucesso:', createdCard);
+          Object.assign(card, createdCard);
+          card.editing = false;
+          delete card.originalTitle;
         },
         error: (error) => {
-          console.error('Erro ao salvar edição do card:', error);
-          alert('Erro ao salvar edição do card. Verifique o console.');
-          this.loadBoard(); 
+          console.error('Erro ao criar card:', error);
+          alert('Erro ao criar card. Verifique o console.');
+          this.columns.forEach(col => {
+            col.cards = col.cards.filter(c => c !== card);
+          });
+          delete card.originalTitle;
+        }
+      });
+    } else {
+      this.http.put<Card>(`${BASE_API_URL}/cards/${card.id}`, { title: card.title }).subscribe({
+        next: (updatedCard) => {
+          console.log('Card atualizado com sucesso:', updatedCard);
+          card.editing = false;
+          delete card.originalTitle;
+        },
+        error: (error) => {
+          console.error('Erro ao atualizar card:', error);
+          alert('Erro ao atualizar card. Verifique o console.');
+          card.title = card.originalTitle!;
+          card.editing = false;
+          this.loadBoard();
+          delete card.originalTitle;
         }
       });
     }
   }
 
   cancelCardEdit(card: Card) {
-    if (card.id === undefined) { 
-      this.columns.forEach(col => col.cards = col.cards.filter(c => c !== card));
-    } else {
-      card.title = card.originalTitle || card.title; 
+    if (card.id === undefined && (card.title === '' || card.originalTitle === '')) {
+      this.columns.forEach(col => {
+        col.cards = col.cards.filter(c => c !== card);
+      });
+    } else if (card.id !== undefined) {
+      card.title = card.originalTitle!;
     }
     card.editing = false;
     delete card.originalTitle;
   }
 
-  handleKeyDown(event: KeyboardEvent, card: Card, inputElement: HTMLInputElement) {
-    if (event.key === 'Enter') {
-      this.saveCardEdit(card, inputElement.value);
-    } else if (event.key === 'Escape') {
-      this.cancelCardEdit(card);
-    }
-  }
-
   deleteCard(card: Card) {
-    if (!card.id) { 
-      console.warn('Tentativa de deletar card sem ID.');
+    if (!confirm(`Tem certeza que deseja excluir o card "${card.title}"?`)) {
       return;
     }
+
+    if (card.id === undefined) {
+      this.columns.forEach(col => {
+        col.cards = col.cards.filter(c => c !== card);
+      });
+      return;
+    }
+
     this.http.delete(`${BASE_API_URL}/cards/${card.id}`).subscribe({
       next: () => {
-        this.columns.forEach(column => {
-          column.cards = column.cards.filter(c => c.id !== card.id);
+        console.log('Card deletado com sucesso:', card.id);
+        this.columns.forEach(col => {
+          col.cards = col.cards.filter(c => c.id !== card.id);
         });
       },
       error: (error) => {
@@ -183,44 +199,66 @@ export class Kanban implements OnInit {
 
   onDrop(targetColumn: Column) {
     if (this.draggedCard) {
-      const sourceColumn = this.columns.find(col => col.id === this.draggedCard?.columnId);
-
-      if (sourceColumn && sourceColumn.id !== targetColumn.id) {
-        sourceColumn.cards = sourceColumn.cards.filter(c => c.id !== this.draggedCard?.id);
-
-        this.draggedCard.columnId = targetColumn.id;
-        this.draggedCard.position = targetColumn.cards.length > 0 ? Math.max(...targetColumn.cards.map(c => c.position!)) + 1 : 0;
-        targetColumn.cards.push(this.draggedCard);
-
-        this.http.put<Card>(`${BASE_API_URL}/cards/${this.draggedCard.id}/move`, {
-          newColumnId: this.draggedCard.columnId,
-          newPosition: this.draggedCard.position
-        }).subscribe({
-          next: (movedCard) => {
-            this.columns.forEach(col => {
-              col.cards = col.cards.sort((a, b) => a.position! - b.position!);
-            });
-          },
-          error: (error) => {
-            console.error('Erro ao mover card:', error);
-            alert('Erro ao mover card. Verifique o console.');
-            this.loadBoard(); 
-          }
-        });
-      } else if (sourceColumn && sourceColumn.id === targetColumn.id) {
-        targetColumn.cards = targetColumn.cards.sort((a, b) => a.position! - b.position!);
+      if (this.draggedCard.columnId === targetColumn.id) {
+        this.draggedCard = null;
+        return;
       }
-      this.draggedCard = null; 
+
+      this.columns.forEach(column => {
+        column.cards = column.cards.filter(c => c.id !== this.draggedCard!.id);
+      });
+
+      this.draggedCard.columnId = targetColumn.id;
+      this.draggedCard.position = targetColumn.cards.length > 0 ? Math.max(...targetColumn.cards.map(c => c.position ?? 0)) + 1 : 0;
+      targetColumn.cards.push(this.draggedCard);
+
+      this.columns.forEach(col => {
+        col.cards = col.cards.sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
+      });
+
+      this.http.put<Card>(`${BASE_API_URL}/cards/${this.draggedCard.id}/move`, {
+        newColumnId: this.draggedCard.columnId,
+        newPosition: this.draggedCard.position
+      }).subscribe({
+        next: (movedCard) => {
+          console.log('Card movido com sucesso:', movedCard);
+        },
+        error: (error) => {
+          console.error('Erro ao mover card:', error);
+          alert('Erro ao mover card. Verifique o console.');
+          this.loadBoard();
+        }
+      });
+    }
+    this.draggedCard = null;
+  }
+
+  handleKeyDown(event: KeyboardEvent, card: Card, inputElement: HTMLInputElement) {
+    if (event.key === 'Enter') {
+      this.saveCardEdit(card, inputElement.value);
+    } else if (event.key === 'Escape') {
+      this.cancelCardEdit(card);
     }
   }
 
-  findCardById(id: number): Card | undefined {
-    for (const column of this.columns) {
-      const foundCard = column.cards.find(card => card.id === id);
-      if (foundCard) {
-        return foundCard;
+  focusCardInput(card: Card) {
+    const inputElement = this.cardInputs.find(
+      (elRef) => elRef.nativeElement.id === `card-input-${card.id}` ||
+                     (card.id === undefined && elRef.nativeElement.id.startsWith('card-input-new'))
+    );
+
+    if (inputElement) {
+      inputElement.nativeElement.focus();
+      inputElement.nativeElement.select();
+    } else {
+      console.warn(`Não foi possível focar o input para o card com ID: ${card.id}`);
+      if (card.id === undefined && this.cardInputs.length > 0) {
+        const firstNewInput = this.cardInputs.find(elRef => elRef.nativeElement.id.startsWith('card-input-new'));
+        if (firstNewInput) {
+          firstNewInput.nativeElement.focus();
+          firstNewInput.nativeElement.select();
+        }
       }
     }
-    return undefined;
   }
 }
