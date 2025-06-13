@@ -1,63 +1,87 @@
-<<<<<<< HEAD
+## Envio de solução
 
-=======
-# ProjectKanbanField
+Gostariamos de entender como você pensa e as decisões que você tomou durante o desenvolvimento, detalhe um pouco mais sobre:
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.0.1.
+**Framework, linguagem e ferramentas**
 
-## Development server
+**Frontend:** 
 
-To start a local development server, run:
+Angular 20
 
-```bash
-ng serve
-```
+TypeScript
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Angular HttpClient
 
-## Code scaffolding
+Angular FormsModule
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Bootstrap Icons
+ 
+**Backend:**
 
-```bash
-ng generate component component-name
-```
+Next.js
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Node.js
 
-```bash
-ng generate --help
-```
+Prisma ORM
 
-## Building
+@prisma/client
 
-To build the project run:
+PostgreSQL
 
-```bash
-ng build
-```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+**Técnologias X e Y**
 
-## Running unit tests
+Justifique porque você optou pela tecnologia X e não a Y?
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+Resolvi ultilizar as tecnologias que foi proposta no desafio, por serem ultilizadas no dia a dia da empresa.
 
-```bash
-ng test
-```
+**Princípios de software**
 
-## Running end-to-end tests
+Quais princípios da engenharia de software que você usou?
 
-For end-to-end (e2e) testing, run:
+Modulariade: dividindo o software em módulos independentes.
 
-```bash
-ng e2e
-```
+Separação de Preocupações: dividindo o código em seções distintas.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
 
-## Additional Resources
+**Desafios e problemas**
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
->>>>>>> d2b77f1 (initial commit)
+Conte um pouco sobre os desafios e problemas que você enfrentou e como você resolveu.
+
+Por ser iniciante nesse ramo, considero que projeto todo foi um desafio e que o  não faltou foi problemas, desde erros de sintaxe simples por não ter muito conhecimento da linguagem, à integracão do frontend com o backend. Porêm nessa uma semana me dediquei 100% no programa, iniciei cursos de JavaScript, Angular e vi várias video aulas no youtube, sobre Next.js e PostgreSQL, fazendo de tudo para entregar o projeto da melhor forma.
+
+**Melhorias e próximas implementações**
+
+O que você entende que pode ser melhorado e como isso pode ser feito?
+
+Acredito de dava para fazer várias melhorias na parte do codigo para ser melhor otimizado, com por exemplo o sistema de arrastar os cards, na questão de implemetações adicionar um sistema de login, adicionar a criação de colunas e um metodo de criação de varios boards. 
+
+**Vídeo de apresentação**
+
+Grave um vídeo do seu projeto rodando e envie o link:
+https://drive.google.com/file/d/1HY1a_0ZUZRB2291Tn7Z2IDzRLK4mCAZ3/view?usp=sharing
+
+**Sobre você**
+
+Queremos te conhecer um pouco melhor, conte um pouco sobre você.
+
+Onde nasceu/De onde você é? Lugares que estudou, empresas que trabalhou, como você se envolveu com desenvolvimento de software.. enfim, Quem é você?
+
+Me chamo Gustavo Leão, tenho 20 anos, nasci em São Paulo capital e hoje resido em São José do Rio Preto, estou no 3º período de Ciência da Computação na Unip. A razão por eu ter escolhido esse curso se dá por conta de sempre ser envolvido com tecnologia, desde jogos, fuçando o computador e projetos de robótica, também, quando estava na escola as matérias que mais gostava sempre foi relacionada a área de extas, sendo matemática a minha preferida, pois gostava de me desafiar a resolver problemas lógicos e desafios que me fizessem quebrar a cabeça, logo, vi que o de Ciência da Computação era exatamente isso, ter que pensar de uma forma lógica para desenvolver programas, além de solucionar linhas de códigos que por algum motivo apresente erros, que muita das vezes são são quse imperceptiveis. A cada dia que passa vejo que fiz a escolha certa em escolher esse curso, amo estudar programação, e vejo que para me tornar um grande profissional tenho que me especializar cada vez mais e adiquirir experiência pois a melhor forma de se aprender é a prática, por conta disso, gostaria muito de entrar na Field, uma empresa que acompanho pelas notícias e redes sociais, e percebo o a quanto é conceituada no mercado, por conta disso gostaria de participar do time Field para me tornar um grande profissional.
+
+**Outros detalhes**
+
+Se quiser enviar alguma informação adicional sobre o desafio..
+
+Gostaria de agradeçer a opotunidade de concorrer a essa vaga, que independente do resultado, aprendi muito com o projeto,desde novos novas linguagem a novos frameworks. Obrigado!
+
+---
+
+Ah, deixe seu e-mail ou telefone para entrarmos em contato com você :) 
+e-mail: gleao383@gmail.com
+
+telefone: (17) 98163-0497
+
+
+
+
