@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "project-kanban-field": {
+    "project-kanban-field": { 
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -25,7 +25,9 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.css"
+              
             ]
           },
           "configurations": {
@@ -59,7 +61,8 @@
               "buildTarget": "project-kanban-field:build:production"
             },
             "development": {
-              "buildTarget": "project-kanban-field:build:development"
+              "buildTarget": "project-kanban-field:build:development",
+              "proxyConfig": "proxy.conf.json" 
             }
           },
           "defaultConfiguration": "development"
@@ -88,5 +91,8 @@
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

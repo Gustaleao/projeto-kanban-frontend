@@ -1,12 +1,18 @@
+// src/app/app.ts
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { Kanban } from './components/kanban/kanban';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  standalone: true,
+  imports: [
+    CommonModule,
+    Kanban 
+  ],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css'] 
 })
-export class App {
-  protected title = 'project-kanban-field';
+export class AppComponent {
+  title = 'kanban-frontend-field';
 }
